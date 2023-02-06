@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "To Do List";
+}
+<div id="newtask">
+    <input type="text" placeholder="Task to be done.." id="text_string">
+    <button type="button" id="push">Add</button>
+</div>
+<div id="tasks">
+</div>
+@section scripts{
+    <script>
+        var id;
+        var text;
+        $("#push").click(function () {
+            if (!text) {
+                const item = $("#text_string").val();
+                const _reqModel = {
+                    TaskName: item
+                };
+                console.log("edit" + text);
+                $.ajax({
+                    url: '/ToDoList/Push',
+                    type: "POST",
+                    data: { reqModel: _reqModel },
+                    dataType: "json",
+                    success: function (json) {
+                        console.log({ json });
+                        $('#tasks').load('/ToDoList/ToDoListDetail', function () {
+                            var current_tasks = document.querySelectorAll(".delete");
+                            for (var i = 0; i < current_tasks.length; i++) {
+                                current_tasks[i].onclick = function () {
+                                    this.parentNode.remove();
+                                    const id = $(this).data('id');
+                                    const _reqModel = {
+                                        deleteId: id
+                                    };
+                                    $.ajax({
+                                        url: '/ToDoList/ToDoListDelete',
+                                        type: 'POST',
+                                        data: { reqModel: _reqModel },
+                                        dataType: 'json',
+                                        success: function (json) {
+                                            console.log("delete");
+                                        }
+                                    });
+                                }
+                            }
+                            var edit_task = document.querySelectorAll(".edit");
+                            console.log(edit_task);
+                            for (var i = 0; i < edit_task.length; i++) {
+                                edit_task[i].onclick = function () {
+                                    id = $(this).data('edit-id');
+                                    text = $(this).data('edit-text');
+                                    $("#text_string").val(text);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            else{
+                //alert("data occur");
+                const item = $("#text_string").val();
+                const _reqModel = {
+                    EditText: item,
+                    EditId : id
+                };
+                $.ajax({
+                    url: '/ToDoList/ToDoListEdit',
+                    type: 'POST',
+                    data: { reqModel: _reqModel },
+                    dataType: 'json',
+                    success: function (json) {
+                        console.log("edit");
+                        $('#tasks').load('/ToDoList/ToDoListDetail');
+                    }
+                });
+                text = null;
+            }
+        });
+    </script>
+}

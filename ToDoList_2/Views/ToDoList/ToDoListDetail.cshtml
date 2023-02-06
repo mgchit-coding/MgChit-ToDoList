@@ -1,0 +1,16 @@
+﻿@model List<ToDoListViewModel>
+@{
+    Layout = null;
+}
+@foreach(var item in Model)
+{
+    <div class="task">
+        <span id="taskname">
+            @(item.TaskName)
+        </span>
+        <button class="delete" type="button" data-id="@(item.ListId)">
+            <i class="far fa-trash-alt"></i>
+        </button>
+        <button class="edit" type="button" data-edit-id="@(item.ListId)" data-edit-text="@(item.TaskName)"></button>
+    </div>
+}
